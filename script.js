@@ -49,7 +49,377 @@ class MoneyTracker {
             }
         });
     }
+// === REPORT METHODS ===
+showReportModal() {
+    this.closeAllModals();
+    document.getElementById('reportModal').style.display = 'block';
+    this.generateReport();
+    this.setupReportEventListeners();
+}
 
+closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+}
+
+setupReportEventListeners() {
+    // Period selector
+    document.getElementById('reportPeriod').addEventListener('change', () => {
+        this.generateReport();
+    });
+
+    // Chart tabs
+    document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            const chartType = e.target.getAttribute('data-chart');
+            this.switchReportChart(chartType);
+        });
+    });
+}
+
+generateReport() {
+    const period = document.getElementById('reportPeriod').value;
+    const filteredData = this.filterDataByPeriod(period);
+    
+    this.updateReportSummary(filteredData);
+    this.updateCategoryBreakdown(filteredData);
+    this.updateMonthlyTrend();
+    this.updateFinancialRatios(filteredData);
+    this.initReportChart();
+}
+
+filterDataByPeriod(period) {
+    const now = new Date();
+    let startDate;
+
+    switch (period) {
+        case 'monthly':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+        case 'last-month':
+            startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            break;
+        case 'quarterly':
+            startDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+            break;
+        case 'yearly':
+            startDate = new Date(now.getFullYear(), 0, 1);
+            break;
+        case 'all':
+        default:
+            startDate = new Date(0); // All time
+            break;
+    }
+
+    return this.transactions.filter(transaction => 
+        new Date(transaction.date) >= startDate
+    );
+}
+
+updateReportSummary(data) {
+    const totalIncome = data
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalExpense = data
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalInvestment = data
+        .filter(t => t.type === 'investment')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const balance = totalIncome - totalExpense;
+
+    document.getElementById('reportIncome').textContent = 
+        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalIncome);
+
+    document.getElementById('reportExpense').textContent = 
+        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalExpense);
+
+    document.getElementById('reportInvestment').textContent = 
+        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalInvestment);
+
+    document.getElementById('reportBalance').textContent = 
+        new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(balance);
+
+    // Update color based on balance
+    const balanceElement = document.getElementById('reportBalance');
+    if (balance < 0) {
+        balanceElement.style.color = 'var(--danger)';
+    } else {
+        balanceElement.style.color = 'var(--success)';
+    }
+}
+
+updateCategoryBreakdown(data) {
+    const incomeCategories = {};
+    const expenseCategories = {};
+
+    // Group by category
+    data.forEach(transaction => {
+        if (transaction.type === 'income') {
+            incomeCategories[transaction.category] = 
+                (incomeCategories[transaction.category] || 0) + transaction.amount;
+        } else if (transaction.type === 'expense') {
+            expenseCategories[transaction.category] = 
+                (expenseCategories[transaction.category] || 0) + transaction.amount;
+        }
+    });
+
+    // Calculate totals for percentages
+    const totalIncome = Object.values(incomeCategories).reduce((a, b) => a + b, 0);
+    const totalExpense = Object.values(expenseCategories).reduce((a, b) => a + b, 0);
+
+    // Update income categories
+    const incomeContainer = document.getElementById('incomeCategories');
+    incomeContainer.innerHTML = '';
+
+    Object.entries(incomeCategories).forEach(([category, amount]) => {
+        const percentage = totalIncome > 0 ? (amount / totalIncome * 100).toFixed(1) : 0;
+        const item = document.createElement('div');
+        item.className = 'category-item';
+        item.innerHTML = `
+            <span class="category-name">${category}</span>
+            <div>
+                <span class="category-amount" style="color: var(--success);">
+                    ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount)}
+                </span>
+                <span class="category-percentage">${percentage}%</span>
+            </div>
+        `;
+        incomeContainer.appendChild(item);
+    });
+
+    // Update expense categories
+    const expenseContainer = document.getElementById('expenseCategories');
+    expenseContainer.innerHTML = '';
+
+    Object.entries(expenseCategories).forEach(([category, amount]) => {
+        const percentage = totalExpense > 0 ? (amount / totalExpense * 100).toFixed(1) : 0;
+        const item = document.createElement('div');
+        item.className = 'category-item';
+        item.innerHTML = `
+            <span class="category-name">${category}</span>
+            <div>
+                <span class="category-amount" style="color: var(--danger);">
+                    ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount)}
+                </span>
+                <span class="category-percentage">${percentage}%</span>
+            </div>
+        `;
+        expenseContainer.appendChild(item);
+    });
+}
+
+updateMonthlyTrend() {
+    const monthlyData = this.getMonthlyData();
+    const tbody = document.getElementById('monthlyTrendBody');
+    tbody.innerHTML = '';
+
+    monthlyData.forEach(month => {
+        const row = document.createElement('tr');
+        const trend = month.balance > 0 ? 'up' : month.balance < 0 ? 'down' : 'neutral';
+        const trendIcon = trend === 'up' ? '📈' : trend === 'down' ? '📉' : '➡️';
+        
+        row.innerHTML = `
+            <td>${month.month}</td>
+            <td style="color: var(--success); font-weight: 600;">
+                ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(month.income)}
+            </td>
+            <td style="color: var(--danger); font-weight: 600;">
+                ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(month.expense)}
+            </td>
+            <td style="color: ${trend === 'up' ? 'var(--success)' : trend === 'down' ? 'var(--danger)' : 'var(--text)'}; font-weight: 600;">
+                ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(month.balance)}
+            </td>
+            <td>
+                <span class="trend-indicator trend-${trend}">
+                    ${trendIcon} ${trend === 'up' ? 'Naik' : trend === 'down' ? 'Turun' : 'Stabil'}
+                </span>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+getMonthlyData() {
+    const monthlyData = {};
+    
+    this.transactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+        const monthName = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long' });
+        
+        if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = {
+                month: monthName,
+                income: 0,
+                expense: 0,
+                balance: 0
+            };
+        }
+        
+        if (transaction.type === 'income') {
+            monthlyData[monthKey].income += transaction.amount;
+        } else if (transaction.type === 'expense') {
+            monthlyData[monthKey].expense += transaction.amount;
+        }
+        
+        monthlyData[monthKey].balance = monthlyData[monthKey].income - monthlyData[monthKey].expense;
+    });
+
+    // Convert to array and sort by date (newest first)
+    return Object.values(monthlyData)
+        .sort((a, b) => new Date(b.month) - new Date(a.month))
+        .slice(0, 6); // Last 6 months
+}
+
+updateFinancialRatios(data) {
+    const totalIncome = data
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalExpense = data
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalInvestment = this.getTotalInvestment();
+
+    // Calculate ratios
+    const savingsRatio = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome * 100).toFixed(1) : 0;
+    const investmentRatio = totalIncome > 0 ? (totalInvestment / totalIncome * 100).toFixed(1) : 0;
+    const expenseRatio = totalIncome > 0 ? (totalExpense / totalIncome * 100).toFixed(1) : 0;
+
+    // Emergency fund calculation (3x monthly expense)
+    const monthlyExpense = this.getMonthlyAverageExpense();
+    const emergencyFundMonths = monthlyExpense > 0 ? (totalInvestment / monthlyExpense).toFixed(1) : 0;
+
+    document.getElementById('savingsRatio').textContent = `${savingsRatio}%`;
+    document.getElementById('investmentRatio').textContent = `${investmentRatio}%`;
+    document.getElementById('expenseRatio').textContent = `${expenseRatio}%`;
+    document.getElementById('emergencyFund').textContent = `${emergencyFundMonths} bulan`;
+
+    // Update colors based on ratios
+    this.updateRatioColor('savingsRatio', savingsRatio, 20);
+    this.updateRatioColor('investmentRatio', investmentRatio, 15);
+    this.updateRatioColor('expenseRatio', expenseRatio, 60);
+    this.updateRatioColor('emergencyFund', emergencyFundMonths, 3);
+}
+
+updateRatioColor(elementId, value, goodThreshold) {
+    const element = document.getElementById(elementId);
+    if (value >= goodThreshold) {
+        element.style.color = 'var(--success)';
+    } else if (value >= goodThreshold * 0.5) {
+        element.style.color = 'var(--warning)';
+    } else {
+        element.style.color = 'var(--danger)';
+    }
+}
+
+initReportChart() {
+    const ctx = document.getElementById('reportChart').getContext('2d');
+    
+    if (this.reportChart) {
+        this.reportChart.destroy();
+    }
+
+    this.reportChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Pemasukan', 'Pengeluaran', 'Investasi'],
+            datasets: [{
+                label: 'Jumlah (Rp)',
+                data: [0, 0, 0],
+                backgroundColor: [
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(245, 158, 11, 0.8)'
+                ],
+                borderColor: [
+                    'rgb(34, 197, 94)',
+                    'rgb(239, 68, 68)',
+                    'rgb(245, 158, 11)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Ringkasan Keuangan'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    this.updateReportChartData();
+}
+
+updateReportChartData() {
+    const period = document.getElementById('reportPeriod').value;
+    const data = this.filterDataByPeriod(period);
+
+    const totalIncome = data.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const totalExpense = data.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+    const totalInvestment = data.filter(t => t.type === 'investment').reduce((sum, t) => sum + t.amount, 0);
+
+    this.reportChart.data.datasets[0].data = [totalIncome, totalExpense, totalInvestment];
+    this.reportChart.update();
+}
+
+switchReportChart(chartType) {
+    // Update active tab
+    document.querySelectorAll('.chart-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-chart="${chartType}"]`).classList.add('active');
+
+    // Update chart based on type
+    // This is a simplified version - you can expand this with different chart types
+    this.updateReportChartData();
+}
+
+// Export functions (simplified versions)
+exportPDF() {
+    this.showNotification('Fitur export PDF akan segera hadir!', 'info');
+}
+
+exportExcel() {
+    this.showNotification('Fitur export Excel akan segera hadir!', 'info');
+}
+
+getMonthlyAverageExpense() {
+    const monthlyExpenses = {};
+    
+    this.transactions
+        .filter(t => t.type === 'expense')
+        .forEach(t => {
+            const date = new Date(t.date);
+            const monthYear = `${date.getFullYear()}-${date.getMonth()}`;
+            monthlyExpenses[monthYear] = (monthlyExpenses[monthYear] || 0) + t.amount;
+        });
+
+    const months = Object.keys(monthlyExpenses);
+    return months.length > 0 ? 
+        Object.values(monthlyExpenses).reduce((a, b) => a + b, 0) / months.length : 0;
+}
     // === MODAL METHODS ===
     showInvestmentModal() {
         this.closeAllModals();
