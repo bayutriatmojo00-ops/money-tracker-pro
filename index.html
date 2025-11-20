@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Tracker Pro</title>
+    <meta name="description" content="Aplikasi manajemen keuangan pribadi dengan fitur investasi dan budget">
+    <meta name="keywords" content="keuangan, investasi, budget, uang, finansial">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Money Tracker Pro</h1>
+            <p>Kelola keuangan, investasi, dan budget dengan mudah</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - Form -->
+            <div class="left-column">
+                <!-- Form Section -->
+                <section class="form-section">
+                    <h2>Tambah Transaksi</h2>
+                    <form id="transactionForm">
+                        <div class="form-group">
+                            <label for="type">Jenis Transaksi</label>
+                            <select id="type" required>
+                                <option value="">Pilih Jenis</option>
+                                <option value="income">Pemasukan</option>
+                                <option value="expense">Pengeluaran</option>
+                                <option value="investment">Investasi</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Kategori</label>
+                            <select id="category" required>
+                                <option value="">Pilih Kategori</option>
+                                <optgroup label="Pemasukan">
+                                    <option value="Gaji">Gaji</option>
+                                    <option value="Bonus">Bonus</option>
+                                    <option value="Dividen">Dividen</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </optgroup>
+                                <optgroup label="Pengeluaran">
+                                    <option value="Makanan">Makanan</option>
+                                    <option value="Transportasi">Transportasi</option>
+                                    <option value="Belanja">Belanja</option>
+                                    <option value="Hiburan">Hiburan</option>
+                                    <option value="Tagihan">Tagihan</option>
+                                </optgroup>
+                                <optgroup label="Investasi">
+                                    <option value="Saham">Saham</option>
+                                    <option value="Reksadana">Reksadana</option>
+                                    <option value="Emas">Emas</option>
+                                    <option value="Deposito">Deposito</option>
+                                    <option value="Crypto">Crypto</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amount">Jumlah (Rp)</label>
+                            <input type="number" id="amount" placeholder="Contoh: 500000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Keterangan</label>
+                            <input type="text" id="description" placeholder="Deskripsi transaksi">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Tanggal</label>
+                            <input type="date" id="date" required>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Simpan Transaksi</button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- Right Column - Summary & Navigation -->
+            <div class="right-column">
+                <!-- Summary Section -->
+                <section class="summary-section">
+                    <h2>Ringkasan Keuangan</h2>
+                    <div class="summary-cards">
+                        <div class="summary-card income-card">
+                            <div class="card-content">
+                                <h3>TOTAL PEMASUKAN</h3>
+                                <span id="totalIncome">Rp 0</span>
+                                <div class="card-trend trend-positive" id="incomeTrend">+0%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card expense-card">
+                            <div class="card-content">
+                                <h3>TOTAL PENGELUARAN</h3>
+                                <span id="totalExpense">Rp 0</span>
+                                <div class="card-trend trend-positive" id="expenseTrend">+0%</div>
+                            </div>
+                        </div>
+
+                        <div class="summary-card investment-card">
+                            <div class="card-content">
+                                <h3>INVESTASI</h3>
+                                <span id="totalInvestment">Rp 0</span>
+                                <div class="card-trend trend-positive" id="investmentTrend">+0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Navigation -->
+                <nav class="feature-nav">
+                    <button class="feature-btn" onclick="moneyTracker.showInvestmentModal()">
+                        <span class="feature-icon">📈</span>
+                        <span>Investasi</span>
+                    </button>
+                    <button class="feature-btn" onclick="moneyTracker.showBudgetModal()">
+                        <span class="feature-icon">🎯</span>
+                        <span>Budget</span>
+                    </button>
+                    <button class="feature-btn" onclick="moneyTracker.showReportModal()">
+                        <span class="feature-icon">📊</span>
+                        <span>Laporan</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Transaction List -->
+        <section class="transactions-section">
+            <h2>Riwayat Transaksi</h2>
+            
+            <div class="transaction-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Cari transaksi...">
+                </div>
+                <div class="filter-group">
+                    <select id="filterCategory">
+                        <option value="">Semua Kategori</option>
+                    </select>
+                    <select id="filterType">
+                        <option value="">Semua Jenis</option>
+                        <option value="income">Pemasukan</option>
+                        <option value="expense">Pengeluaran</option>
+                        <option value="investment">Investasi</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Jenis</th>
+                            <th>Kategori</th>
+                            <th>Keterangan</th>
+                            <th>Jumlah</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionList">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Investment Modal -->
+    <div id="investmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📈 Portfolio Investasi</h2>
+                <span class="close" onclick="moneyTracker.closeInvestmentModal()">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Investment Summary -->
+                <div class="investment-summary">
+                    <div class="investment-total">
+                        <h3>Total Portfolio</h3>
+                        <span id="portfolioTotal">Rp 0</span>
+                        <div class="portfolio-growth">
+                            <span id="portfolioGrowth">+0%</span>
+                            <span id="portfolioProfit">(Rp 0)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="investment-chart">
+                        <canvas id="investmentChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Add Investment Form -->
+                <div class="add-investment-form">
+                    <h3>Tambah Investasi Baru</h3>
+                    <form id="investmentForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="investmentType">Jenis Investasi</label>
+                                <select id="investmentType" required>
+                                    <option value="Saham">Saham</option>
+                                    <option value="Reksadana">Reksadana</option>
+                                    <option value="Emas">Emas</option>
+                                    <option value="Deposito">Deposito</option>
+                                    <option value="Crypto">Crypto</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="investmentName">Nama</label>
+                                <input type="text" id="investmentName" placeholder="Contoh: BBCA, Bitcoin" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="investmentAmount">Jumlah Investasi (Rp)</label>
+                                <input type="number" id="investmentAmount" placeholder="1000000" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="currentValue">Nilai Sekarang (Rp)</label>
+                                <input type="number" id="currentValue" placeholder="1200000">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="investmentDate">Tanggal Mulai</label>
+                            <input type="date" id="investmentDate" required>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Tambah Investasi</button>
+                    </form>
+                </div>
+
+                <!-- Investment List -->
+                <div class="investment-list">
+                    <h3>Daftar Investasi</h3>
+                    <div class="investment-items" id="investmentList">
+                        <!-- Investment items will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎯 Pengaturan Budget</h2>
+                <span class="close" onclick="moneyTracker.closeBudgetModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Fitur budget akan segera hadir!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Laporan Keuangan</h2>
+                <span class="close" onclick="moneyTracker.closeReportModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Fitur laporan akan segera hadir!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

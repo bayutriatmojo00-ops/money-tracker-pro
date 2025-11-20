@@ -1,0 +1,712 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--background);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* Header */
+.app-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.app-header h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.app-header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 400px;
+}
+
+.left-column {
+    background: var(--surface);
+    padding: 30px;
+    border-right: 1px solid var(--border);
+}
+
+.right-column {
+    background: var(--surface);
+    padding: 30px;
+}
+
+/* Form Section */
+.form-section h2 {
+    color: var(--text);
+    margin-bottom: 25px;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 16px;
+    background: var(--surface);
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+input::placeholder {
+    color: var(--text-light);
+}
+
+.submit-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* Summary Section */
+.summary-section h2 {
+    color: var(--text);
+    margin-bottom: 25px;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.summary-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.summary-card {
+    background: var(--surface);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.income-card {
+    border-left: 4px solid var(--success);
+}
+
+.expense-card {
+    border-left: 4px solid var(--danger);
+}
+
+.investment-card {
+    border-left: 4px solid var(--warning);
+}
+
+.card-content h3 {
+    color: var(--text-light);
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.card-content span {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.card-trend {
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.trend-positive {
+    color: var(--success);
+}
+
+.trend-negative {
+    color: var(--danger);
+}
+
+/* Feature Navigation */
+.feature-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.feature-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+
+.feature-btn:hover {
+    border-color: var(--primary);
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.feature-icon {
+    font-size: 1.5em;
+    width: 40px;
+    text-align: center;
+}
+
+.feature-btn span:last-child {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1.1em;
+}
+
+/* Transactions Section */
+.transactions-section {
+    padding: 30px;
+    border-top: 1px solid var(--border);
+    background: var(--background);
+}
+
+.transactions-section h2 {
+    color: var(--text);
+    margin-bottom: 25px;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.transaction-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    min-width: 250px;
+}
+
+.filter-group {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-group select {
+    min-width: 150px;
+}
+
+.table-container {
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+}
+
+th {
+    background: #f8fafc;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+.income-badge {
+    background: #dcfce7;
+    color: var(--success);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.expense-badge {
+    background: #fee2e2;
+    color: var(--danger);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.investment-badge {
+    background: #fef3c7;
+    color: #d97706;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.income-amount {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.expense-amount {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.investment-amount-display {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.delete-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+}
+
+.edit-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+}
+
+.empty-state-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--surface);
+    margin: 2% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+/* Investment Summary */
+.investment-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 25px;
+    background: var(--background);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.investment-total h3 {
+    color: var(--text-light);
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.investment-total span {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.portfolio-growth {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.portfolio-growth span:first-child {
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.portfolio-growth span:last-child {
+    color: var(--text-light);
+    font-size: 0.8em;
+}
+
+.investment-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Add Investment Form */
+.add-investment-form {
+    background: var(--surface);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 30px;
+}
+
+.add-investment-form h3 {
+    margin-bottom: 20px;
+    color: var(--text);
+    font-size: 1.2em;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Investment List */
+.investment-list h3 {
+    margin-bottom: 20px;
+    color: var(--text);
+    font-size: 1.2em;
+}
+
+.investment-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.investment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.investment-item:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+}
+
+.investment-info {
+    flex: 1;
+}
+
+.investment-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+.investment-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85em;
+    color: var(--text-light);
+}
+
+.investment-amount {
+    text-align: right;
+}
+
+.investment-value {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+.investment-return {
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.return-positive {
+    color: var(--success);
+}
+
+.return-negative {
+    color: var(--danger);
+}
+
+.investment-actions {
+    display: flex;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+/* Empty State for Investments */
+.empty-investment {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+}
+
+.empty-investment-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .left-column {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .transaction-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+    }
+    
+    .investment-summary {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        border-radius: 0;
+        margin: -20px;
+    }
+    
+    body {
+        padding: 0;
+        background: var(--surface);
+    }
+    
+    .app-header {
+        padding: 25px 20px;
+    }
+    
+    .left-column, .right-column, .transactions-section {
+        padding: 25px 20px;
+    }
+    
+    .app-header h1 {
+        font-size: 1.8em;
+    }
+    
+    .feature-btn {
+        padding: 15px;
+    }
+    
+    th, td {
+        padding: 12px 15px;
+    }
+    
+    .investment-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .investment-amount {
+        text-align: left;
+        width: 100%;
+    }
+    
+    .investment-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-card, .feature-btn {
+    animation: fadeIn 0.5s ease-out;
+}
